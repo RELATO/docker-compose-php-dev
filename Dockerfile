@@ -6,10 +6,12 @@ RUN apt-get update && apt-get install -y \
     libc-client-dev \
     libzip-dev \ 
     libkrb5-dev \
+    libicu-dev \
     libpng-dev \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
     libssl-dev \
+    zlib1g-dev \
     openssl \
     locales \
     zip \
@@ -21,7 +23,7 @@ RUN apt-get update && apt-get install -y \
 
 
 # Install extensions
-RUN docker-php-ext-install mysqli iconv pdo pdo_mysql mbstring zip exif pcntl
+RUN docker-php-ext-install mysqli iconv pdo pdo_mysql mbstring zip exif pcntl intl
 RUN docker-php-ext-configure gd --with-gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/
 
 RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
@@ -29,6 +31,12 @@ RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
 
 RUN docker-php-ext-install gd
 # RUN docker-php-ext-install openssl
+
+RUN docker-php-ext-configure opcache --enable-opcache \
+    && docker-php-ext-install opcache
+
+#RUN pecl install apcu-5.1.5 \
+#    && docker-php-ext-enable apcu
 
 RUN locale-gen en_US.UTF-8
 RUN update-locale
